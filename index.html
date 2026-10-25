@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChinguTalk 🌟 Belajar Bahasa Korea</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins & Jua -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Jua&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+        .font-jua {
+            font-family: 'Jua', sans-serif;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .mic-pulsing {
+            animation: pulse-ring 1.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-700 pb-12">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 shadow-sm border-b border-pink-100">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-tr from-pink-400 to-purple-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-md">
+                    🇰🇷🇮🇩
+                </div>
+                <div>
+                    <h1 class="font-jua text-2xl text-pink-600 tracking-wide">ChinguTalk <span class="text-sm font-sans font-semibold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">친구톡</span></h1>
+                    <p class="text-xs text-slate-500">Belajar Bicara & Eja Korea</p>
+                </div>
+            </div>
+            <!-- Stars & Level Badge -->
+            <div class="flex items-center gap-3">
+                <div id="badge-display" class="hidden sm:flex items-center gap-1.5 bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-2xl text-xs font-bold text-purple-700">
+                    🌱 <span id="badge-text">Pemula</span>
+                </div>
+                <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-2xl shadow-sm">
+                    <span class="text-xl">⭐</span>
+                    <div>
+                        <div class="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">Bintang</div>
+                        <div id="total-stars" class="font-jua text-lg text-amber-700 leading-none">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 mt-6">
+
+        <!-- Welcome Banner -->
+        <section class="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden mb-8">
+            <div class="absolute right-4 -bottom-6 text-9xl opacity-20 font-jua select-none pointer-events-none">안녕</div>
+            <div class="relative z-10 max-w-xl">
+                <span class="bg-white/20 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">🌟 Edisi Keluarga Indo-Korea</span>
+                <h2 class="font-jua text-3xl md:text-4xl mt-3 mb-2 leading-tight">Ayo Latihan Bicara Bahasa Korea!</h2>
+                <p class="text-pink-100 text-sm md:text-base leading-relaxed">
+                    Dengarkan suaranya, tirukan dengan mikrofon, kumpulkan bintang, dan buka dekorasi avatarmu!
+                </p>
+            </div>
+        </section>
+
+        <!-- Category Tabs -->
+        <div class="flex overflow-x-auto pb-3 gap-2 no-scrollbar mb-6">
+            <button onclick="filterCategory('all')" id="cat-btn-all" class="cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-pink-600 text-white shadow-md shadow-pink-200">
+                ✨ Semua Kata
+            </button>
+            <button onclick="filterCategory('greetings')" id="cat-btn-greetings" class="cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-white text-slate-600 hover:bg-pink-50 border border-slate-200">
+                👋 Salam (인사말)
+            </button>
+            <button onclick="filterCategory('family')" id="cat-btn-family" class="cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-white text-slate-600 hover:bg-pink-50 border border-slate-200">
+                👨‍👩‍👧 Keluarga (가족)
+            </button>
+            <button onclick="filterCategory('food')" id="cat-btn-food" class="cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-white text-slate-600 hover:bg-pink-50 border border-slate-200">
+                🍜 Makanan (음식)
+            </button>
+            <button onclick="filterCategory('colors')" id="cat-btn-colors" class="cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-white text-slate-600 hover:bg-pink-50 border border-slate-200">
+                🎨 Warna & Angka (색깔)
+            </button>
+        </div>
+
+        <!-- Search & Custom Word Actions -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div class="relative w-full sm:w-72">
+                <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari kata (contoh: Halo)..." class="w-full bg-white border border-slate-200 rounded-2xl py-2.5 pl-4 pr-10 text-sm focus:outline-none focus:border-pink-500 shadow-sm">
+                <span class="absolute right-3 top-2.5 text-slate-400">🔍</span>
+            </div>
+            <button onclick="openAddModal()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-5 py-2.5 rounded-2xl font-semibold text-sm shadow-md shadow-teal-100 hover:opacity-95 transition flex items-center justify-center gap-2">
+                <span>➕</span> Tambah Kata Baru
+            </button>
+        </div>
+
+        <!-- Word Cards Grid -->
+        <div id="words-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            <!-- Dynamically populated -->
+        </div>
+
+        <!-- Personal Achievement Board & Avatar Section -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Achievement Board -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-jua text-xl text-slate-800 mb-1 flex items-center gap-2"><span>🏆</span> Papan Pencapaian</h3>
+                    <p class="text-xs text-slate-500 mb-4">Statistik latihan lokal kamu.</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-pink-50 px-4 py-3 rounded-2xl">
+                            <span class="text-sm font-semibold text-slate-600">Kata Telah Dilatih</span>
+                            <span id="stats-practiced" class="font-jua text-lg text-pink-600">0</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-purple-50 px-4 py-3 rounded-2xl">
+                            <span class="text-sm font-semibold text-slate-600">Level Saat Ini</span>
+                            <span id="stats-level" class="font-jua text-lg text-purple-600">Pemula</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="resetProgress()" class="mt-6 text-xs text-rose-500 hover:text-rose-700 font-semibold underline text-left">
+                    Reset Progress 🔄
+                </button>
+            </div>
+
+            <!-- Virtual Avatar Showcase -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border border-slate-100 flex flex-col items-center justify-center text-center">
+                <h3 class="font-jua text-xl text-slate-800 mb-1">Avatar Kamu 🎨</h3>
+                <p class="text-xs text-slate-500 mb-4">Terbuka otomatis seiring bertambahnya bintang!</p>
+                <div class="w-24 h-24 bg-gradient-to-tr from-pink-100 to-purple-100 rounded-full flex items-center justify-center text-5xl shadow-inner mb-3">
+                    <span id="avatar-icon">👦</span>
+                </div>
+                <div id="avatar-status" class="text-xs font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                    Kumpulkan 3 Bintang untuk Aksesori Pertama!
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- PRACTICE MODAL -->
+    <div id="practice-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl relative transform scale-95 transition-transform duration-300" id="modal-content-box">
+            <button onclick="closePracticeModal()" class="absolute right-5 top-5 text-slate-400 hover:text-slate-600 bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg transition">
+                ✕
+            </button>
+
+            <div class="text-center mb-6">
+                <span id="modal-category-badge" class="bg-pink-100 text-pink-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Kategori</span>
+            </div>
+
+            <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-6 text-center border border-pink-100 mb-6 shadow-inner">
+                <div id="modal-korean" class="font-jua text-5xl md:text-6xl text-pink-600 mb-2">안녕하세요</div>
+                <div id="modal-romanization" class="text-base text-purple-600 font-semibold italic">annyeonghaseyo</div>
+                <div id="modal-indonesian" class="text-lg font-bold text-slate-700 mt-2">Halo</div>
+            </div>
+
+            <div class="space-y-4">
+                <button onclick="speakTargetWord()" class="w-full bg-indigo-50 border-2 border-indigo-200 text-indigo-700 py-3 px-6 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-indigo-100 transition shadow-sm">
+                    <span class="text-2xl">🔊</span> Dengarkan Pengucapan (듣기)
+                </button>
+
+                <div class="relative">
+                    <button id="mic-btn" onclick="startSpeechRecognition()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-pink-200 hover:opacity-95 transition">
+                        <span id="mic-icon" class="text-2xl">🎤</span> <span id="mic-text">Ucapkan Sekarang (말하기)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Box -->
+            <div id="result-box" class="mt-6 hidden rounded-2xl p-4 text-center border">
+                <div id="result-title" class="font-bold text-lg mb-1">Hasil</div>
+                <p class="text-sm text-slate-600">Suara kamu: <span id="heard-text" class="font-semibold text-slate-800 italic">"..."</span></p>
+                <div id="accuracy-badge" class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-bold">Status</div>
+            </div>
+
+            <!-- Audio Helper / Skip Button Container -->
+            <div id="helper-container" class="mt-4 hidden text-center">
+                <p id="helper-message" class="text-xs text-amber-600 font-semibold mb-2">Belum tepat? Mari kita dengarkan perlahan.</p>
+                <div class="flex gap-2 justify-center">
+                    <button onclick="speakTargetWordSlow()" class="bg-amber-100 text-amber-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-200 transition">
+                        🐢 Dengar Lambat
+                    </button>
+                    <button id="skip-btn" onclick="skipWord()" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-200 transition hidden">
+                        ⏭️ Lewati Kata Ini
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD CUSTOM WORD MODAL -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl relative">
+            <button onclick="closeAddModal()" class="absolute right-5 top-5 text-slate-400 hover:text-slate-600 bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+                ✕
+            </button>
+            <h3 class="font-jua text-2xl text-slate-800 mb-4 flex items-center gap-2">
+                <span>➕</span> Tambah Kata Baru
+            </h3>
+            <form id="custom-word-form" onsubmit="saveCustomWord(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Kata Bahasa Korea (한글)</label>
+                    <input type="text" id="input-korean" required placeholder="Contoh: 사랑해요" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-pink-500 font-jua text-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Cara Baca (Romanization)</label>
+                    <input type="text" id="input-roman" required placeholder="Contoh: saranghaeyo" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-pink-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Arti Bahasa Indonesia</label>
+                    <input type="text" id="input-indo" required placeholder="Contoh: Aku Cinta Kamu" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-pink-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Kategori</label>
+                    <select id="input-category" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-sm focus:outline-none focus:border-pink-500">
+                        <option value="greetings">👋 Salam (인사말)</option>
+                        <option value="family">👨‍👩‍👧 Keluarga (가족)</option>
+                        <option value="food">🍜 Makanan (음식)</option>
+                        <option value="colors">🎨 Warna & Angka (색깔)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-pink-200 transition">
+                    Simpan Kata ✨
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MESSAGE MODAL -->
+    <div id="msg-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <div id="msg-icon" class="text-5xl mb-3">🎉</div>
+            <h4 id="msg-title" class="font-jua text-xl text-slate-800 mb-1">Berhasil!</h4>
+            <p id="msg-text" class="text-sm text-slate-600 mb-6">Pesan di sini.</p>
+            <button onclick="closeMsgModal()" class="w-full bg-pink-600 text-white font-bold py-3 rounded-2xl shadow-md hover:bg-pink-700 transition">
+                OK 👍
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const defaultWords = [
+            { id: 1, category: 'greetings', korean: '안녕하세요', roman: 'annyeonghaseyo', indo: 'Halo / Selamat Pagi', emoji: '👋' },
+            { id: 2, category: 'greetings', korean: '감사합니다', roman: 'gamsahamnida', indo: 'Terima Kasih', emoji: '🙏' },
+            { id: 3, category: 'greetings', korean: '안녕히 가세요', roman: 'annyeonghi gaseyo', indo: 'Selamat Jalan', emoji: '🚶‍♂️' },
+            { id: 4, category: 'greetings', korean: '미안합니다', roman: 'mianhamnida', indo: 'Maaf', emoji: '🙇' },
+            { id: 5, category: 'greetings', korean: '반갑습니다', roman: 'bangapseumnida', indo: 'Senang Bertemu Denganmu', emoji: '🤝' },
+            { id: 6, category: 'family', korean: '엄마', roman: 'eomma', indo: 'Ibu / Mama', emoji: '👩' },
+            { id: 7, category: 'family', korean: '아빠', roman: 'appa', indo: 'Ayah / Papa', emoji: '👨' },
+            { id: 8, category: 'family', korean: '할머니', roman: 'halmeoni', indo: 'Nenek', emoji: '👵' },
+            { id: 9, category: 'family', korean: '할아버지', roman: 'harabeoji', indo: 'Kakek', emoji: '👴' },
+            { id: 10, category: 'family', korean: '형', roman: 'hyeong', indo: 'Kakak Laki-laki', emoji: '👦' },
+            { id: 11, category: 'family', korean: '누나', roman: 'nuna', indo: 'Kakak Perempuan', emoji: '👧' },
+            { id: 12, category: 'food', korean: '김치', roman: 'kimchi', indo: 'Kimchi', emoji: '🥬' },
+            { id: 13, category: 'food', korean: '밥', roman: 'bap', indo: 'Nasi / Makanan', emoji: '🍚' },
+            { id: 14, category: 'food', korean: '물', roman: 'mul', indo: 'Air Putih', emoji: '💧' },
+            { id: 15, category: 'food', korean: '라면', roman: 'ramyeon', indo: 'Mi Instan / Ramen', emoji: '🍜' },
+            { id: 16, category: 'food', korean: '불고기', roman: 'bulgogi', indo: 'Daging Panggang Korea', emoji: '🥩' },
+            { id: 17, category: 'food', korean: '사과', roman: 'sagwa', indo: 'Buah Apel', emoji: '🍎' },
+            { id: 18, category: 'colors', korean: '빨간색', roman: 'ppalgansaek', indo: 'Warna Merah', emoji: '🔴' },
+            { id: 19, category: 'colors', korean: '파란색', roman: 'paransaek', indo: 'Warna Biru', emoji: '🔵' },
+            { id: 20, category: 'colors', korean: '노란색', roman: 'noransaek', indo: 'Warna Kuning', emoji: '🟡' },
+            { id: 21, category: 'colors', korean: '하나', roman: 'hana', indo: 'Angka 1 (Satu)', emoji: '1️⃣' },
+            { id: 22, category: 'colors', korean: '둘', roman: 'dul', indo: 'Angka 2 (Dua)', emoji: '2️⃣' },
+            { id: 23, category: 'colors', korean: '셋', roman: 'set', indo: 'Angka 3 (Tiga)', emoji: '3️⃣' }
+        ];
+
+        let words = [];
+        let currentFilter = 'all';
+        let currentSearchQuery = '';
+        let currentActiveWord = null;
+        let totalStars = 0;
+        let practicedCount = 0;
+        let failAttempts = 0;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            renderWords();
+            updateStatsUI();
+        });
+
+        function loadFromLocalStorage() {
+            const savedCustom = localStorage.getItem('chingutalk_custom_words');
+            const customWords = savedCustom ? JSON.parse(savedCustom) : [];
+            words = [...defaultWords, ...customWords];
+
+            totalStars = parseInt(localStorage.getItem('chingutalk_stars') || '0');
+            practicedCount = parseInt(localStorage.getItem('chingutalk_practiced') || '0');
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('chingutalk_stars', totalStars);
+            localStorage.setItem('chingutalk_practiced', practicedCount);
+            const customOnly = words.filter(w => w.id > 100);
+            localStorage.setItem('chingutalk_custom_words', JSON.stringify(customOnly));
+        }
+
+        function renderWords() {
+            const grid = document.getElementById('words-grid');
+            grid.innerHTML = '';
+
+            let filtered = words.filter(w => {
+                const matchesCategory = (currentFilter === 'all') || (w.category === currentFilter);
+                const matchesSearch = w.korean.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                      w.roman.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                      w.indo.toLowerCase().includes(currentSearchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center">
+                        <div class="text-5xl mb-3">🔍</div>
+                        <h4 class="font-jua text-xl text-slate-700">Tidak ada kata ditemukan</h4>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(word => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-3xl p-5 shadow-sm hover:shadow-md transition border border-slate-100 flex flex-col justify-between cursor-pointer group hover:border-pink-200";
+                card.onclick = () => openPracticeModal(word);
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-3xl bg-pink-50 w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">${word.emoji}</span>
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${word.id > 100 ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'}">
+                                ${word.id > 100 ? 'Kata Kamu' : word.category}
+                            </span>
+                        </div>
+                        <h3 class="font-jua text-2xl text-slate-800 group-hover:text-pink-600 transition-colors">${word.korean}</h3>
+                        <p class="text-xs text-purple-600 font-semibold italic mt-0.5">${word.roman}</p>
+                        <p class="text-sm font-bold text-slate-600 mt-2">${word.indo}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-pink-600">
+                        <span class="flex items-center gap-1">🎙️ Latih Bicara</span>
+                        <span class="bg-pink-50 px-2.5 py-1 rounded-xl group-hover:bg-pink-600 group-hover:text-white transition">Mulai →</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.cat-tab').forEach(btn => {
+                btn.className = "cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-white text-slate-600 hover:bg-pink-50 border border-slate-200";
+            });
+            const activeBtn = document.getElementById(`cat-btn-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = "cat-tab px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition bg-pink-600 text-white shadow-md shadow-pink-200";
+            }
+            renderWords();
+        }
+
+        function handleSearch() {
+            currentSearchQuery = document.getElementById('search-input').value;
+            renderWords();
+        }
+
+        function openPracticeModal(word) {
+            currentActiveWord = word;
+            failAttempts = 0;
+            document.getElementById('modal-korean').innerText = word.korean;
+            document.getElementById('modal-romanization').innerText = word.roman;
+            document.getElementById('modal-indonesian').innerText = word.indo;
+            document.getElementById('modal-category-badge').innerText = word.id > 100 ? 'Kata Kamu' : word.category.toUpperCase();
+            
+            document.getElementById('result-box').classList.add('hidden');
+            document.getElementById('helper-container').classList.add('hidden');
+
+            const modal = document.getElementById('practice-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                document.getElementById('modal-content-box').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closePracticeModal() {
+            const modal = document.getElementById('practice-modal');
+            modal.classList.add('opacity-0');
+            document.getElementById('modal-content-box').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function speakTargetWord(rate = 0.8) {
+            if (!currentActiveWord || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(currentActiveWord.korean);
+            utterance.lang = 'ko-KR';
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakTargetWordSlow() {
+            speakTargetWord(0.5); // Slower rate for guided help
+        }
+
+        function startSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                showMsg('Browser Tidak Mendukung', 'Gunakan Google Chrome atau Safari.', '⚠️');
+                return;
+            }
+
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.classList.add('bg-amber-500', 'mic-pulsing');
+            document.getElementById('mic-icon').innerText = '👂';
+            document.getElementById('mic-text').innerText = 'Mendengarkan...';
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ko-KR';
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript.trim();
+                evaluatePronunciation(speechResult);
+            };
+
+            recognition.onerror = () => resetMicButton();
+            recognition.onend = () => resetMicButton();
+
+            try { recognition.start(); } catch (e) { resetMicButton(); }
+        }
+
+        function resetMicButton() {
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.classList.remove('bg-amber-500', 'mic-pulsing');
+            document.getElementById('mic-icon').innerText = '🎤';
+            document.getElementById('mic-text').innerText = 'Ucapkan Sekarang (말하기)';
+        }
+
+        function evaluatePronunciation(heard) {
+            const resultBox = document.getElementById('result-box');
+            const resultTitle = document.getElementById('result-title');
+            const heardText = document.getElementById('heard-text');
+            const accuracyBadge = document.getElementById('accuracy-badge');
+
+            resultBox.classList.remove('hidden');
+            heardText.innerText = `"${heard}"`;
+
+            const target = currentActiveWord.korean.trim();
+            const isMatch = heard.includes(target) || target.includes(heard);
+
+            if (isMatch) {
+                resultBox.className = "mt-6 rounded-2xl p-4 text-center border bg-emerald-50 border-emerald-200";
+                resultTitle.innerText = "🎉 Luar Biasa! Benar!";
+                resultTitle.className = "font-bold text-lg mb-1 text-emerald-700";
+                accuracyBadge.innerText = "+1 ⭐";
+                accuracyBadge.className = "mt-2 inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700";
+                
+                totalStars += 1;
+                practicedCount += 1;
+                saveToLocalStorage();
+                updateStatsUI();
+
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+                setTimeout(() => closePracticeModal(), 1500);
+            } else {
+                failAttempts++;
+                resultBox.className = "mt-6 rounded-2xl p-4 text-center border bg-amber-50 border-amber-200";
+                resultTitle.innerText = "💪 Hampir Tepat!";
+                resultTitle.className = "font-bold text-lg mb-1 text-amber-700";
+                accuracyBadge.innerText = "Coba lagi!";
+                accuracyBadge.className = "mt-2 inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700";
+
+                // Trigger 3-miss Audio Assistance & 4-miss Skip Button
+                if (failAttempts >= 3) {
+                    document.getElementById('helper-container').classList.remove('hidden');
+                    if (failAttempts >= 4) {
+                        document.getElementById('skip-btn').classList.remove('hidden');
+                    }
+                }
+            }
+        }
+
+        function skipWord() {
+            closePracticeModal();
+            showMsg('Dilompati', 'Mari coba kata latihan yang lain!', '⏭️');
+        }
+
+        function updateStatsUI() {
+            document.getElementById('total-stars').innerText = totalStars;
+            document.getElementById('stats-practiced').innerText = practicedCount;
+
+            let level = "Pemula";
+            let avatar = "👦";
+            let statusText = "Kumpulkan 3 Bintang untuk Aksesori Pertama!";
+
+            if (totalStars >= 8) {
+                level = "Master Korea";
+                avatar = "👑🇰🇷";
+                statusText = "Luar biasa! Kamu sudah menjadi Master!";
+            } else if (totalStars >= 4) {
+                level = "Bintang Belajar";
+                avatar = "⭐👦";
+                statusText = "Hebat! Kacamata keren terbuka!";
+            }
+
+            document.getElementById('stats-level').innerText = level;
+            document.getElementById('badge-text').innerText = level;
+            document.getElementById('avatar-icon').innerText = avatar;
+            document.getElementById('avatar-status').innerText = statusText;
+        }
+
+        function resetProgress() {
+            if (confirm('Yakin ingin mereset bintang?')) {
+                totalStars = 0;
+                practicedCount = 0;
+                localStorage.clear();
+                updateStatsUI();
+                renderWords();
+                showMsg('Direset', 'Progress telah diatur ulang.', '🔄');
+            }
+        }
+
+        function openAddModal() { document.getElementById('add-modal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('add-modal').classList.add('hidden'); }
+
+        function saveCustomWord(e) {
+            e.preventDefault();
+            const newWord = {
+                id: Date.now(),
+                category: document.getElementById('input-category').value,
+                korean: document.getElementById('input-korean').value.trim(),
+                roman: document.getElementById('input-roman').value.trim(),
+                indo: document.getElementById('input-indo').value.trim(),
+                emoji: '✨'
+            };
+            words.push(newWord);
+            saveToLocalStorage();
+            renderWords();
+            closeAddModal();
+            document.getElementById('custom-word-form').reset();
+            showMsg('Berhasil!', 'Kata baru ditambahkan.', '🌟');
+        }
+
+        function showMsg(title, text, icon = '🎉') {
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-text').innerText = text;
+            document.getElementById('msg-icon').innerText = icon;
+            document.getElementById('msg-modal').classList.remove('hidden');
+        }
+        function closeMsgModal() { document.getElementById('msg-modal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
